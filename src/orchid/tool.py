@@ -12,6 +12,12 @@ class Tool(object):
         """
         self._tool = tool
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<Tool ({self.name})>"
+
     @property
     def composition(self):
         """Composition associated with the tool."""
@@ -36,8 +42,24 @@ class Tool(object):
         Returns:
             List[Input] - All inputs associated with tool
         """
-        inputs = fusion_list_process(self._tool.GetInputList())
+        inputs = fusion_list_process(self._tool.GetInputList)()
         return [Input(i) for i in inputs]
+
+    def get_input(self, name):
+        """
+        Return an Input object by its name.
+
+        Arguments:
+            name -- name of the input
+
+        Returns:
+            Input | None -- Input object if found on the tool, None otherwise
+        """
+        inputs = self.inputs()
+        for inp in inputs:
+            if inp.name == name:
+                return inp
+        return None
 
     def is_attr_animated(self, attr_name):
         """
@@ -69,7 +91,7 @@ class Tool(object):
         if is_animated:
             if keyframe is None:
                 # Set value for the current keyframe
-                frame = self.composition().current_frame()
+                frame = self.composition.frame
                 self._tool.SetInput(attr_name, attr_value, frame)
             else:
                 # Set value fir indicated keyframe
@@ -81,11 +103,11 @@ class Tool(object):
             else:
                 # Set value, add keyframe after
                 self._tool.SetInput(attr_name, attr_value)
-                comp = self.composition()
-                stored_time = comp.current_frame()
-                comp.set_current_frame(keyframe)
+                comp = self.composition
+                stored_time = comp.frame
+                comp.frame = keyframe
                 self._tool.SetInput(attr_name, comp.BezierSpline())
-                comp.set_current_frame(stored_time)
+                comp.frame = stored_time
 
     def set_color(self, red, green, blue, alpha=None, keyframe=None):
         """
