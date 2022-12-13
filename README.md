@@ -26,3 +26,4 @@ comp.add_tool("RectangleMask")
 ## Related Links
 
 - [Fusion Scripting Guide](https://documents.blackmagicdesign.com/UserManuals/Fusion8_Scripting_Guide.pdf)
+- [Script Reference](https://www.steakunderwater.com/VFXPedia/96.0.243.189/index8c76.html?title=Eyeon:Script/Reference/Applications/Fusion/Classes)

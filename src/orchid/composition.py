@@ -27,7 +27,8 @@ class Composition(object):
     @property
     def active_tool(self):
         """Active tool for the composition."""
-        return Tool(self._composition.ActiveTool)
+        tool = self._composition.ActiveTool
+        return Tool(tool) if tool is not None else None
 
     def selected_tools(self):
         """

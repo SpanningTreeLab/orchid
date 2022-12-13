@@ -1,3 +1,5 @@
+import re
+
 from .input import Input
 from .util import fusion_list_process
 
@@ -10,6 +12,8 @@ class Tool(object):
         Arguments:
             tool : BlackmagicFusion.Tool - tool object
         """
+        if tool is None:
+            raise Exception("Tool cannot be None")
         self._tool = tool
 
     def __str__(self):
@@ -55,10 +59,28 @@ class Tool(object):
         Returns:
             Input | None -- Input object if found on the tool, None otherwise
         """
-        inputs = self.inputs()
-        for inp in inputs:
+        for inp in self.inputs():
             if inp.name == name:
                 return inp
+        return None
+
+    def children(self):
+        """
+        Return children tools of the current tool.
+
+        Returns:
+            List[Tool] - List of all children tools
+        """
+        tools = fusion_list_process(self._tool.GetChildrenList)()
+        return [Tool(t) for t in tools]
+
+    def get_child_by_pattern(self, regex):
+        """
+        Get first child matching a particular name pattern.
+        """
+        for child in self.children():
+            if re.match(regex, child.name):
+                return child
         return None
 
     def is_attr_animated(self, attr_name):
@@ -106,8 +128,21 @@ class Tool(object):
                 comp = self.composition
                 stored_time = comp.frame
                 comp.frame = keyframe
-                self._tool.SetInput(attr_name, comp.BezierSpline())
+                self._tool.SetInput(attr_name, comp._composition.BezierSpline())
                 comp.frame = stored_time
+
+    def get_attr(self, attr_name, keyframe=None):
+        """
+        Get an input's value at a given keyframe.
+
+        Arguments:
+            attr_name : str - Name of attribute to read
+
+        Optional arguments:
+            keyframe : int - Keyframe for time to access value, defaults to current
+        """
+        frame = keyframe or self.composition.frame
+        return self._tool.GetInput(attr_name, frame)
 
     def set_color(self, red, green, blue, alpha=None, keyframe=None):
         """
