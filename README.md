@@ -1,6 +1,6 @@
 # Orchid
 
-A Python animation library for the Blackmagic Fusion API
+A Python 2D animation library for the Blackmagic Fusion API
 
 Built for [Spanning Tree](https://youtube.com/spanningtree)
 
